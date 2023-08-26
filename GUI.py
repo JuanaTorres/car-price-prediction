@@ -14,9 +14,6 @@ class CarPriceGUI:
         self.text_area = scrolledtext.ScrolledText(self.root, width=150, height=20)
         self.text_area.pack(padx=10, pady=10)
 
-        self.data_amount_scale = Scale(self.root, from_=1, to=100, orient="horizontal", label="Matrix Correlation Data Amount (%)")
-        self.data_amount_scale.pack(padx=10, pady=5)
-
         self.show_correlation_button = Button(self.root, text="Show Correlation Matrix", command=self.display_correlation_matrix)
         self.show_correlation_button.pack(padx=10, pady=5)
 
