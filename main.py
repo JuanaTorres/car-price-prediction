@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.linear_model import LinearRegression
 import tkinter as tk
@@ -63,13 +64,19 @@ class CarPriceGUI:
         self.show_correlation_button.pack(padx=10, pady=5)
         self.next_button.configure(command=self.feature_selection)
     def plot_corr(self):
+        root2 = tk.Tk()
+        self.root2 = root2
+        self.root.title("Matplotlib Figure in Tkinter")
         f = plt.figure(figsize=(15, 15))
         plt.matshow(self.corr, fignum=f.number)
         plt.xticks(range(len(self.corr.columns)), self.corr.columns, fontsize=10, rotation=45)
         plt.yticks(range(len(self.corr.columns)), self.corr.columns, fontsize=10, rotation=45)
         cb = plt.colorbar()
         cb.ax.tick_params(labelsize=10)
-        plt.show()
+        canvas = FigureCanvasTkAgg(f, master=self.root2)
+        canvas_widget = canvas.get_tk_widget()
+        canvas_widget.pack()
+        root2.mainloop()
     def feature_selection(self):
         self.text_area.delete('1.0', tk.END)
         self.text_area.update()
