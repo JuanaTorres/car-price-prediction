@@ -28,11 +28,14 @@ class CarPriceGUI:
         self.text_area.insert(tk.END, "DataSet")
         self.text_area.insert(tk.END, motor_stock)
         self.Y = motor_stock['price']
+        #variable dependiente porque depente de los valores de X, se quiere saber como calcular price
         self.X = motor_stock.drop(['price', 'car_ID', 'CarName'], axis=1)
+        #Variable independiente, se eliminan columnas no necesarias
 
 
     def selection_data(self):
         self.text_area.delete('1.0', tk.END)
+        #cambia caracteres por columnas y sus numeros
         one_hot_encoded_data = pd.get_dummies(self.X, columns=['fueltype', 'aspiration', 'doornumber', 'carbody',
                                                           'drivewheel', 'enginelocation', 'enginetype',
                                                           'cylindernumber', 'fuelsystem'])
@@ -77,13 +80,15 @@ class CarPriceGUI:
         canvas_widget = canvas.get_tk_widget()
         canvas_widget.pack()
         root2.mainloop()
+    #Selecciónar dependiendo de la regression deja solo las 20 columnas mejores respecto a Y
     def feature_selection(self):
         self.text_area.delete('1.0', tk.END)
         self.text_area.update()
         self.selector = SelectKBest(f_regression, k=20)
-        self.X_selected = self.selector.fit_transform(self.X, self.Y)
+        self.X = self.selector.fit_transform(self.X, self.Y)
         # Selected features
         cols = self.selector.get_support(indices=True)
+        self.attributes = self.attributes[cols]
         self.text_area.insert(tk.END,"\nSelected Features:")
         self.text_area.insert(tk.END,self.attributes)
 
@@ -93,15 +98,16 @@ class CarPriceGUI:
         self.text_area.insert(tk.END,"\nY:\n")
         self.text_area.insert(tk.END,self.Y[:5])
         self.next_button.configure(command=self.train_linear_regression_model)
+   #Entrenamiento de la regression lineal
     def train_linear_regression_model(self):
         from sklearn.linear_model import LinearRegression
         self.text_area.delete('1.0', tk.END)
         self.text_area.update()
-        self.text_area.insert(tk.END, "\nLinear Regression:")
+        self.text_area.insert(tk.END, "\nLinear Regression \n Price:")
         self.reg = LinearRegression().fit(self.X, self.Y)
 
         # Beta values
-
+#gas*betaG+salario*betaSalario
         self.text_area.insert(tk.END,"\nBeta:\n")
         self.text_area.insert(tk.END,self.reg.coef_)
 
