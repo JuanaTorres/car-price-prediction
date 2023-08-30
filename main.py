@@ -2,6 +2,7 @@ from random import random, randrange
 
 import numpy as np
 import pandas as pd
+from pandas_profiling.utils.cache import cache_file
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from sklearn.feature_selection import SelectKBest, f_regression
@@ -48,9 +49,13 @@ class CarPriceGUI:
 
     def display_data_statistics(self):
 
+        report = self.X.profile_report(sort=None, html={'style':{'fullwidth':True}})
+        report_path = "motor_dataset_report.html"
+        report.to_file(report_path)
+
         self.text_area.delete('1.0', tk.END)
         self.text_area.update()
-        self.text_area.insert(tk.END, "Basic statistics:\n")
+        self.text_area.insert(tk.END, f"Estadísticas Avanzadas generadas en {report_path}\nBasic statistics:\n")
         self.text_area.insert(tk.END, self.X.describe().transpose())
         self.next_button.configure(command=self.display_correlation_matrix)
 
@@ -150,9 +155,8 @@ class CarPriceGUI:
 
     def user(self):
         price = 0
-        for x, y, z in zip(self.reg.coef_, self.attributes, self.data):
-            if(y==z):
-                price+=x*z
+        for x, y in zip(self.reg.coef_, self.attributes):
+            price+=x*self.data[y+""]
         if(price==0):
             price=" Estan los datos vacios"
         else:
@@ -217,7 +221,6 @@ class CarPriceGUI:
             "fuelsystem_spdi": self.fuelsystem_spdi_var.get(),
             "fuelsystem_spfi": self.fuelsystem_spfi_var.get()
         }
-        print(self.data)
         self.user()
 
     def insertu(self):
